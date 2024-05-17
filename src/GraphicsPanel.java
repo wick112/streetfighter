@@ -12,6 +12,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     private Player player;
     private boolean[] pressedKeys;
     private ArrayList<Coin> coins;
+    private Timer punchTimer;
+
 
     public GraphicsPanel() {
         try {
@@ -19,13 +21,23 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        player = new Player("src/ryuLeft.png", "src/ryuRight.png", "src/ryuPunch.png");
+        player = new Player("src/ryuLeft.png", "src/ryuRight.png", "src/ryuPunchRight.png", "src/ryuPunchLeft.png");
         coins = new ArrayList<>();
         pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
         addKeyListener(this);
         addMouseListener(this);
         setFocusable(true); // this line of code + one below makes this panel active for keylistener events
         requestFocusInWindow(); // see comment above
+
+        punchTimer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                player.resetPunch();
+                punchTimer.stop();
+                repaint();
+            }
+        });
+        punchTimer.setRepeats(false);
     }
 
     @Override
@@ -51,9 +63,12 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         g.setFont(new Font("Courier New", Font.BOLD, 24));
         g.drawString("Score: " + player.getScore(), 20, 40);
 
-        if (pressedKeys[69]) {
+        if (pressedKeys[69]) { // E key
             player.punch();
-        }else {
+            if (!punchTimer.isRunning()) {
+                punchTimer.start();
+            }
+        } else {
             // player moves left (A)
             if (pressedKeys[65]) {
                 player.faceLeft();
@@ -75,11 +90,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             if (pressedKeys[83]) {
                 player.moveDown();
             }
-
         }
-
-
-
+        repaint();
     }
 
     // ----- KeyListener interface methods -----

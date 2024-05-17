@@ -8,14 +8,15 @@ public class Player {
     private final double MOVE_AMT = 0.2;
     private BufferedImage right;
     private BufferedImage left;
-    private BufferedImage punchMove;
+    private BufferedImage punchrightMove;
+    private BufferedImage punchleftMove;
     private boolean facingRight;
     private double xCoord;
     private double yCoord;
     private int score;
-    private BufferedImage prevImage;
+    private BufferedImage currentImage;
 
-    public Player(String leftImg, String rightImg, String punchImg) {
+    public Player(String leftImg, String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
         yCoord = 435;
@@ -23,11 +24,13 @@ public class Player {
         try {
             left = ImageIO.read(new File(leftImg));
             right = ImageIO.read(new File(rightImg));
-            punchMove = ImageIO.read(new File(punchImg));
+            punchrightMove = ImageIO.read(new File(punchrightImg));
+            punchleftMove = ImageIO.read(new File(punchleftImg));
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        prevImage = right;
+        currentImage = right;
     }
 
     public int getxCoord() {
@@ -44,10 +47,12 @@ public class Player {
 
     public void faceRight() {
         facingRight = true;
+        currentImage = right;
     }
 
     public void faceLeft() {
         facingRight = false;
+        currentImage = left;
     }
 
     public void moveRight() {
@@ -74,43 +79,31 @@ public class Player {
         }
     }
 
-
     public void collectCoin() {
         score++;
     }
 
     public BufferedImage getPlayerImage() {
-        if (facingRight) {
-            return right;
-        } else {
-            return left;
-        }
+        return currentImage;
     }
 
     public void punch() {
-
-        // Set punch image
-        if (facingRight) {
-            prevImage = right;
-            right = punchMove;
+        if(facingRight){
+            currentImage = punchrightMove;
+        }else{
+            currentImage = punchleftMove;
         }
 
     }
 
-    public void resetImage() {
-        // Reset image to previous state
-        if (facingRight) {
-            right = prevImage;
-        } else {
-            left = prevImage;
-        }
+    public void resetPunch() {
+        currentImage = facingRight ? right : left;
     }
 
     // we use a "bounding Rectangle" for detecting collision
     public Rectangle playerRect() {
         int imageHeight = getPlayerImage().getHeight();
         int imageWidth = getPlayerImage().getWidth();
-        Rectangle rect = new Rectangle((int) xCoord, (int) yCoord, imageWidth, imageHeight);
-        return rect;
+        return new Rectangle((int) xCoord, (int) yCoord, imageWidth, imageHeight);
     }
 }
