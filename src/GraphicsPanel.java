@@ -17,7 +17,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
 
     public GraphicsPanel() {
         try {
-            background = ImageIO.read(new File("src/background.png"));
+            background = ImageIO.read(new File("src/fightbackground.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -82,14 +82,14 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             }
 
             // player moves up (W)
-            if (pressedKeys[87]) {
-                player.moveUp();
-            }
+//            if (pressedKeys[87]) {
+//                player.moveUp();
+//            }
 
             // player moves down (S)
-            if (pressedKeys[83]) {
-                player.moveDown();
-            }
+//            if (pressedKeys[83]) {
+//                player.moveDown();
+//            }
         }
         repaint();
     }

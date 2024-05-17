@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Player {
-    private final double MOVE_AMT = 0.2;
+    private final double MOVE_AMT = 0.5;
     private BufferedImage right;
     private BufferedImage left;
     private BufferedImage punchrightMove;
@@ -19,7 +19,7 @@ public class Player {
     public Player(String leftImg, String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
-        yCoord = 435;
+        yCoord = 350;
         score = 0;
         try {
             left = ImageIO.read(new File(leftImg));
@@ -67,17 +67,17 @@ public class Player {
         }
     }
 
-    public void moveUp() {
-        if (yCoord - MOVE_AMT >= 0) {
-            yCoord -= MOVE_AMT;
-        }
-    }
+//    public void moveUp() {
+//        if (yCoord - MOVE_AMT >= 0) {
+//            yCoord -= MOVE_AMT;
+//        }
+//    }
 
-    public void moveDown() {
-        if (yCoord + MOVE_AMT <= 435) {
-            yCoord += MOVE_AMT;
-        }
-    }
+//    public void moveDown() {
+//        if (yCoord + MOVE_AMT <= 435) {
+//            yCoord += MOVE_AMT;
+//        }
+//    }
 
     public void collectCoin() {
         score++;
