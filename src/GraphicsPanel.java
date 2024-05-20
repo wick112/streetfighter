@@ -15,13 +15,14 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     private Timer punchTimer;
 
 
+
     public GraphicsPanel() {
         try {
             background = ImageIO.read(new File("src/fightbackground.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        player = new Player("src/ryuLeft.png", "src/ryuRight.png", "src/ryuPunchRight.png", "src/ryuPunchLeft.png");
+        player = new Player("src/ryuRight.png", "src/ryuPunchRight.png", "src/ryuPunchLeft.png");
         coins = new ArrayList<>();
         pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
         addKeyListener(this);
@@ -38,13 +39,14 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             }
         });
         punchTimer.setRepeats(false);
+
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);  // just do this
         g.drawImage(background, 0, 0, null);  // the order that things get "painted" matter; we put background down first
-        g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), null);
+        g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
 
         // this loop does two things:  it draws each Coin that gets placed with mouse clicks,
         // and it also checks if the player has "intersected" (collided with) the Coin, and if so,
@@ -64,8 +66,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         g.drawString("Score: " + player.getScore(), 20, 40);
 
         if (pressedKeys[69]) { // E key
-            player.punch();
-            if (!punchTimer.isRunning()) {
+            if (!player.isPunching()) {
+                player.punch();
                 punchTimer.start();
             }
         } else {
@@ -120,10 +122,18 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             Point mouseClickLocation = e.getPoint();
             Coin coin = new Coin(mouseClickLocation.x, mouseClickLocation.y);
             coins.add(coin);
+
+        }else {
+            Point mouseClickLocation = e.getPoint();
+            if (player.playerRect().contains(mouseClickLocation)) {
+                player.turn();
+            }
         }
     }
 
     public void mouseEntered(MouseEvent e) { } // unimplemented
 
     public void mouseExited(MouseEvent e) { } // unimplemented
+
+
 }

@@ -3,9 +3,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Player {
-    private final double MOVE_AMT = 0.5;
+    private final double MOVE_AMT = 0.2;
     private BufferedImage right;
     private BufferedImage left;
     private BufferedImage punchrightMove;
@@ -16,25 +17,47 @@ public class Player {
     private int score;
     private BufferedImage currentImage;
 
-    public Player(String leftImg, String rightImg, String punchrightImg, String punchleftImg) {
+    private boolean isPunching;
+
+    private Animation run;
+    public Player(String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
         yCoord = 350;
         score = 0;
         try {
-            left = ImageIO.read(new File(leftImg));
+//            left = ImageIO.read(new File(leftImg));
             right = ImageIO.read(new File(rightImg));
-            punchrightMove = ImageIO.read(new File(punchrightImg));
             punchleftMove = ImageIO.read(new File(punchleftImg));
+            punchrightMove = ImageIO.read(new File(punchrightImg));
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         currentImage = right;
+
+        ArrayList<BufferedImage> run_animation = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            String filename = "src/RyuAni/run_" + i + ".png";
+            try {
+                run_animation.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        run = new Animation(run_animation,200);
+
+
+        isPunching = false;
     }
 
     public int getxCoord() {
-        return (int) xCoord;
+        if (facingRight) {
+            return (int) xCoord;
+        } else {
+            return (int) (xCoord + (getPlayerImage().getWidth()));
+        }
     }
 
     public int getyCoord() {
@@ -47,12 +70,16 @@ public class Player {
 
     public void faceRight() {
         facingRight = true;
-        currentImage = right;
+//        currentImage = right;
     }
 
     public void faceLeft() {
         facingRight = false;
-        currentImage = left;
+//        currentImage = left;
+    }
+
+    public boolean ifFacingRight(){
+        return facingRight;
     }
 
     public void moveRight() {
@@ -67,40 +94,76 @@ public class Player {
         }
     }
 
-//    public void moveUp() {
-//        if (yCoord - MOVE_AMT >= 0) {
-//            yCoord -= MOVE_AMT;
-//        }
-//    }
+    public void turn() {
+        if (facingRight) {
+            faceLeft();
+        } else {
+            faceRight();
+        }
+    }
 
-//    public void moveDown() {
-//        if (yCoord + MOVE_AMT <= 435) {
-//            yCoord += MOVE_AMT;
-//        }
-//    }
+    public void moveUp() {
+        if (yCoord - MOVE_AMT >= 0) {
+            yCoord -= 10;
+        }
+    }
+
+    public void moveDown() {
+        if (yCoord + MOVE_AMT <= 435) {
+            yCoord += 10;
+        }
+    }
 
     public void collectCoin() {
         score++;
     }
 
-    public BufferedImage getPlayerImage() {
-        return currentImage;
-    }
 
     public void punch() {
-        if(facingRight){
-            currentImage = punchrightMove;
-        }else{
-            currentImage = punchleftMove;
-        }
-
+        isPunching = true;
     }
 
     public void resetPunch() {
-        currentImage = facingRight ? right : left;
+        isPunching = false;
     }
 
+    public boolean isPunching(){
+        return isPunching;
+    }
+
+
+    public BufferedImage getPlayerImage() {
+        if (isPunching) {
+            if (!facingRight) {
+                return punchleftMove;
+            } else{
+                return punchrightMove;
+            }
+        } else {
+            return run.getActiveFrame();
+        }
+    }
+
+    //These functions are newly added to let the player turn left and right
+    //These functions when combined with the updated getxCoord()
+    //Allow the player to turn without needing separate images for left and right
+    public int getHeight() {
+        return getPlayerImage().getHeight();
+    }
+
+//    public void resetPunch() {
+//        currentImage = facingRight ? right : left;
+//    }
+
     // we use a "bounding Rectangle" for detecting collision
+
+    public int getWidth() {
+        if (facingRight) {
+            return getPlayerImage().getWidth();
+        } else {
+            return getPlayerImage().getWidth() * -1;
+        }
+    }
     public Rectangle playerRect() {
         int imageHeight = getPlayerImage().getHeight();
         int imageWidth = getPlayerImage().getWidth();
