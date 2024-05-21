@@ -20,6 +20,8 @@ public class Player {
     private boolean isPunching;
 
     private Animation run;
+    private Animation punch;
+
     public Player(String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
@@ -35,6 +37,19 @@ public class Player {
             System.out.println(e.getMessage());
         }
         currentImage = right;
+
+        ArrayList<BufferedImage> punch_animation = new ArrayList<>();
+        for (int i = 1; i <= 3; i++) {
+            String filename = "src/RyuAniPunch/punch_" + i + ".png";
+            try {
+                punch_animation.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        punch = new Animation(punch_animation,200);
+
 
         ArrayList<BufferedImage> run_animation = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
@@ -134,11 +149,12 @@ public class Player {
 
     public BufferedImage getPlayerImage() {
         if (isPunching) {
-            if (!facingRight) {
-                return punchleftMove;
-            } else{
-                return punchrightMove;
-            }
+//            if (!facingRight) {
+//                return punchleftMove;
+//            } else{
+//                return punchrightMove;
+//            }
+            return punch.getActiveFrame();
         } else {
             return run.getActiveFrame();
         }

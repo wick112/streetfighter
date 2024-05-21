@@ -30,7 +30,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         setFocusable(true); // this line of code + one below makes this panel active for keylistener events
         requestFocusInWindow(); // see comment above
 
-        punchTimer = new Timer(1000, new ActionListener() {
+        punchTimer = new Timer(600, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 player.resetPunch();
