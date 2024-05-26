@@ -15,6 +15,7 @@ public class Player {
     private double xCoord;
     private double yCoord;
     private int score;
+    private int health;
     private BufferedImage currentImage;
 
     private boolean isPunching;
@@ -25,8 +26,9 @@ public class Player {
     public Player(String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
-        yCoord = 350;
+        yCoord = 360;
         score = 0;
+        health = 5;
         try {
 //            left = ImageIO.read(new File(leftImg));
             right = ImageIO.read(new File(rightImg));
@@ -39,7 +41,7 @@ public class Player {
         currentImage = right;
 
         ArrayList<BufferedImage> punch_animation = new ArrayList<>();
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 2; i++) {
             String filename = "src/RyuAniPunch/punch_" + i + ".png";
             try {
                 punch_animation.add(ImageIO.read(new File(filename)));
@@ -115,6 +117,14 @@ public class Player {
         } else {
             faceRight();
         }
+    }
+
+    public void setHealth(int newH){
+        health -= newH;
+    }
+
+    public int getHealth(){
+        return health;
     }
 
     public void moveUp() {
