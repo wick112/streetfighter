@@ -23,7 +23,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        player = new Player("src/RyuAni/run_1.png", "src/RyuAniPunch/punch_1.png", "src/RyuAniPunch/punch_1.png");
+        player = new Player("src/RyuAni/run_1.png", "src/RyuAni.RyuAniPunch/punch_1.png", "src/RyuAni.RyuAniPunch/punch_1.png");
         player2 = new Player2("src/Bison/Ani/bisonRun_1.png", "src/BisonAni/bisonPunch_1.png", "src/BisonAni/bisonPunch_1.png");
         pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
         addKeyListener(this);
@@ -55,6 +55,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
 
     @Override
     public void paintComponent(Graphics g) {
+        boolean player2Action = false;
+
         super.paintComponent(g);  // just do this
         g.drawImage(background, 0, 0, null);  // the order that things get "painted" matter; we put background down first
         g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
@@ -76,20 +78,29 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                     }
                 }
             }
+            player2Action = true;
         } else {
-            // player2 moves left (A)
             if (pressedKeys[37]) {
                 player2.faceLeft();
                 player2.moveLeft();
+                player2Action = true;
             }
-
-            // player2 moves right (D)
             if (pressedKeys[39]) {
                 player2.faceRight();
                 player2.moveRight();
+                player2Action = true;
             }
+        }
 
-            // player2 moves up (W)
+        if (!player2Action) {
+            player2.setIdle(true);
+        } else {
+            player2.setIdle(false);
+        }
+
+
+
+        // player2 moves up (W)
 //            if (pressedKeys[38]) {
 //                player2.moveUp();
 //            }
@@ -98,7 +109,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
 //            if (pressedKeys[40]) {
 //                player2.moveDown();
 //            }
-        }
+
 
         if (pressedKeys[69]) { // E key
             if (!player.isPunching()) {

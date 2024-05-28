@@ -19,9 +19,11 @@ public class Player2 {
     private int health2;
 
     private boolean isPunching;
+    private boolean isIdle;
 
     private Animation run;
     private Animation punch;
+    private Animation idle;
 
     public Player2(String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = false;
@@ -42,7 +44,7 @@ public class Player2 {
 
         ArrayList<BufferedImage> punch_animation = new ArrayList<>();
         for (int i = 1; i <= 2; i++) {
-            String filename = "src/BisonAniPunch/bisonPunch_" + i + ".png";
+            String filename = "src/BisonAni/BisonAniPunch/bisonPunch_" + i + ".png";
             try {
                 punch_animation.add(ImageIO.read(new File(filename)));
             }
@@ -51,6 +53,19 @@ public class Player2 {
             }
         }
         punch = new Animation(punch_animation,200);
+
+        ArrayList<BufferedImage> idle_animation = new ArrayList<>();
+        for (int i = 1; i <= 1; i++) {
+            String filename = "src/BisonAni/bisonIdle.png";
+            try {
+                idle_animation.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        idle = new Animation(idle_animation,200);
+        isIdle = true;
 
 
         ArrayList<BufferedImage> run_animation = new ArrayList<>();
@@ -67,6 +82,7 @@ public class Player2 {
 
 
         isPunching = false;
+
     }
 
     public int getxCoord() {
@@ -103,12 +119,14 @@ public class Player2 {
         if (xCoord + MOVE_AMT <= 920) {
             xCoord += MOVE_AMT;
         }
+        isIdle = false;
     }
 
     public void moveLeft() {
         if (xCoord - MOVE_AMT >= 0) {
             xCoord -= MOVE_AMT;
         }
+        isIdle = false;
     }
 
     public void turn() {
@@ -123,12 +141,14 @@ public class Player2 {
         if (yCoord - MOVE_AMT >= 0) {
             yCoord -= 10;
         }
+        isIdle = false;
     }
 
     public void moveDown() {
         if (yCoord + MOVE_AMT <= 435) {
             yCoord += 10;
         }
+        isIdle = false;
     }
 
     public void setHealth(int newH){
@@ -156,15 +176,22 @@ public class Player2 {
         return isPunching;
     }
 
+    public void setIdle(boolean idle) {
+        this.isIdle = idle;
+    }
+
+    public boolean isIdle() {
+        return isIdle;
+    }
+
+
+
 
     public BufferedImage getPlayerImage() {
         if (isPunching) {
-//            if (!facingRight) {
-//                return punchleftMove;
-//            } else{
-//                return punchrightMove;
-//            }
             return punch.getActiveFrame();
+        } else if (isIdle) {
+            return idle.getActiveFrame();
         } else {
             return run.getActiveFrame();
         }

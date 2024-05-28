@@ -42,7 +42,7 @@ public class Player {
 
         ArrayList<BufferedImage> punch_animation = new ArrayList<>();
         for (int i = 1; i <= 2; i++) {
-            String filename = "src/RyuAniPunch/punch_" + i + ".png";
+            String filename = "src/RyuAni/RyuAniPunch/punch_" + i + ".png";
             try {
                 punch_animation.add(ImageIO.read(new File(filename)));
             }

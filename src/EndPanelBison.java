@@ -53,7 +53,7 @@ public class EndPanelBison extends JPanel implements ActionListener {
 
     private void playMusic() {
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/Assets/lacedmax.wav").getAbsoluteFile());
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/Assets/win.wav").getAbsoluteFile());
             songClip = AudioSystem.getClip();
             songClip.open(audioInputStream);
             songClip.loop(Clip.LOOP_CONTINUOUSLY);  // song repeats when finished
