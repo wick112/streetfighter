@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Player {
-    private final double MOVE_AMT = 0.2;
+    private final double MOVE_AMT = 0.4;
     private BufferedImage right;
     private BufferedImage left;
     private BufferedImage punchrightMove;

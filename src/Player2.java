@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Player2 {
-    private final double MOVE_AMT = 0.2;
+    private final double MOVE_AMT = 0.4;
     private BufferedImage right;
     private BufferedImage left;
     private BufferedImage punchrightMove;
@@ -27,7 +27,7 @@ public class Player2 {
 
     public Player2(String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = false;
-        xCoord = 550;
+        xCoord = 850;
         yCoord = 350;
         score = 0;
         health2 = 5;

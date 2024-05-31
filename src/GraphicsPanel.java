@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -6,6 +7,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 public class GraphicsPanel extends JPanel implements KeyListener, MouseListener {
     private BufferedImage background;
@@ -14,6 +18,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     private boolean[] pressedKeys;
     private Timer punchTimer;
     private Timer punchTimer2;
+
+    private Clip songClip;
 
 
 
@@ -51,6 +57,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         });
         punchTimer2.setRepeats(false);
 
+        playMusic();
+
     }
 
     @Override
@@ -74,6 +82,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 if (player2.playerRect().intersects(player.playerRect())) { // check for collision
                     player.setHealth(5);
                     if(player.getHealth() == 0){
+                        songClip.stop();
+                        songClip.close();
                         bisonWin();
                     }
                 }
@@ -118,6 +128,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 if (player.playerRect().intersects(player2.playerRect())) { // check for collision
                     player2.setHealth(5);
                     if(player2.getHealth() == 0){
+                        songClip.stop();
+                        songClip.close();
                         ryuWin();
                     }
                 }
@@ -190,6 +202,18 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     }
     public void bisonWin(){
         EndFrameBison r = new EndFrameBison();
+    }
+
+    private void playMusic() {
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/Assets/humannature.wav").getAbsoluteFile());
+            songClip = AudioSystem.getClip();
+            songClip.open(audioInputStream);
+            songClip.loop(Clip.LOOP_CONTINUOUSLY);  // song repeats when finished
+            songClip.start();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 
