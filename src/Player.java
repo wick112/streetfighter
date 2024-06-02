@@ -16,6 +16,7 @@ public class Player {
     private boolean facingRight;
     private double xCoord;
     private double yCoord;
+    private double groundYCoord;
     private int score;
     private int health;
     private BufferedImage currentImage;
@@ -23,6 +24,10 @@ public class Player {
     private boolean isPunching;
     private boolean isIdle;
     private boolean isJumping;
+    private boolean isFalling;
+    private boolean isJumpingRight;
+    private boolean isJumpingLeft;
+
 
     private Animation run;
     private Animation punch;
@@ -32,7 +37,8 @@ public class Player {
     public Player(String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
-        yCoord = 360;
+        groundYCoord = 360;
+        yCoord = groundYCoord;
         score = 0;
         health = 5;
         try {
@@ -70,6 +76,7 @@ public class Player {
         }
         jump = new Animation(jump_animation,200);
         isJumping = false;
+        isFalling = false;
 
         ArrayList<BufferedImage> idle_animation = new ArrayList<>();
         for (int i = 1; i <= 1; i++) {
@@ -163,39 +170,29 @@ public class Player {
 
     public void moveUp() {
         if (yCoord - MOVE_AMT >= 0) {
-            yCoord -= 10;
+            yCoord -= 120;
         }
         isIdle = false;
     }
 
     public void moveDown() {
         if (yCoord + MOVE_AMT <= 435) {
-            yCoord += 10;
+            yCoord += 120;
         }
         isIdle = false;
     }
+
 
     public void jump() {
         isJumping = true;
+        isFalling = false;
     }
 
-    public void jumpRight() {
-        isJumping = true;
-        if (xCoord + MOVE_AMT <= 920) {
-            xCoord += MOVE_AMT * 10; // Adjust this value for the rightward jump distance
-        }
-        yCoord -= 200; // Adjust this value for the upward jump height
-        isIdle = false;
+    public void fall() {
+        isJumping = false;
+        isFalling = true;
     }
 
-    public void jumpLeft() {
-        isJumping = true;
-        if (xCoord - MOVE_AMT >= 0) {
-            xCoord -= MOVE_AMT * 10; // Adjust this value for the leftward jump distance
-        }
-        yCoord -= 200; // Adjust this value for the upward jump height
-        isIdle = false;
-    }
 
     public void resetJump() {
         isJumping = false;
@@ -229,6 +226,39 @@ public class Player {
 
     public boolean isIdle() {
         return isIdle;
+    }
+
+    public void updateJumpingState() {
+        if (isJumping) {
+            if (yCoord > groundYCoord - 100) { // move up until 100 units above the ground
+                moveUp();
+                if (isJumpingRight) {
+                    moveRight();
+                }
+                if (isJumpingLeft) {
+                    moveLeft();
+                }
+            } else {
+                fall();
+            }
+        } else if (isFalling) {
+            if (yCoord < groundYCoord) { // move down until back on the ground
+                moveDown();
+                if (isJumpingRight) {
+                    moveRight();
+                }
+                if (isJumpingLeft) {
+                    moveLeft();
+                }
+            } else {
+                resetJump();
+            }
+        }
+    }
+
+    public void setJumpingDirection(boolean right, boolean left) {
+        isJumpingRight = right;
+        isJumpingLeft = left;
     }
 
 

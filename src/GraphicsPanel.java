@@ -19,6 +19,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     private Timer punchTimer;
     private Timer punchTimer2;
     private Timer jumpTimer;
+    private Timer playerJumpUpdater;
 
 
     private Clip songClip;
@@ -68,6 +69,15 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             }
         });
         jumpTimer.setRepeats(false);
+
+        playerJumpUpdater = new Timer(20, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                player.updateJumpingState();
+                repaint();
+            }
+        });
+        playerJumpUpdater.start();
 
         playMusic();
 
@@ -148,17 +158,13 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             }
             if (pressedKeys[87]) { // W key for jump
                 if (!player.isJumping()) {
-                    if (pressedKeys[68]) { // W + D for right jump
-                        player.jumpRight();
-                    } else if (pressedKeys[65]) { // W + A for left jump
-                        player.jumpLeft();
-                    } else { // W for straight jump
-                        player.jump();
-                    }
-                    jumpTimer.start();
+                    boolean right = pressedKeys[68]; // W + D for right jump
+                    boolean left = pressedKeys[65]; // W + A for left jump
+                    player.setJumpingDirection(right, left);
+                    player.jump();
                 }
+                playerAction = true;
             }
-            playerAction = true;
 
         }
         if (!playerAction) {
