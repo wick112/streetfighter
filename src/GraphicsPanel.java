@@ -18,6 +18,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     private boolean[] pressedKeys;
     private Timer punchTimer;
     private Timer punchTimer2;
+    private Timer jumpTimer;
+
 
     private Clip songClip;
 
@@ -57,12 +59,23 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         });
         punchTimer2.setRepeats(false);
 
+        jumpTimer = new Timer(600, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                player.resetJump();
+                jumpTimer.stop();
+                repaint();
+            }
+        });
+        jumpTimer.setRepeats(false);
+
         playMusic();
 
     }
 
     @Override
     public void paintComponent(Graphics g) {
+        boolean playerAction = false;
         boolean player2Action = false;
 
         super.paintComponent(g);  // just do this
@@ -75,13 +88,13 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         g.drawString("Player Health: " + player.getHealth(), 20, 40);
         g.drawString("Player2 Health: " + player2.getHealth(), 400, 40);
 
-        if (pressedKeys[17]) { // E key
+        if (pressedKeys[17]) { // E key for player 2 punch
             if (!player2.isPunching()) {
                 player2.punch();
                 punchTimer2.start();
-                if (player2.playerRect().intersects(player.playerRect())) { // check for collision
+                if (player2.playerRect().intersects(player.playerRect())) {
                     player.setHealth(5);
-                    if(player.getHealth() == 0){
+                    if (player.getHealth() == 0) {
                         songClip.stop();
                         songClip.close();
                         bisonWin();
@@ -90,12 +103,12 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             }
             player2Action = true;
         } else {
-            if (pressedKeys[37]) {
+            if (pressedKeys[37]) { // Left arrow key for player 2
                 player2.faceLeft();
                 player2.moveLeft();
                 player2Action = true;
             }
-            if (pressedKeys[39]) {
+            if (pressedKeys[39]) { // Right arrow key for player 2
                 player2.faceRight();
                 player2.moveRight();
                 player2Action = true;
@@ -108,55 +121,52 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             player2.setIdle(false);
         }
 
-
-
-        // player2 moves up (W)
-//            if (pressedKeys[38]) {
-//                player2.moveUp();
-//            }
-
-            // player2 moves down (S)
-//            if (pressedKeys[40]) {
-//                player2.moveDown();
-//            }
-
-
-        if (pressedKeys[69]) { // E key
+        if (pressedKeys[69]) { // E key for punch
             if (!player.isPunching()) {
                 player.punch();
                 punchTimer.start();
-                if (player.playerRect().intersects(player2.playerRect())) { // check for collision
-                    player2.setHealth(5);
-                    if(player2.getHealth() == 0){
+                if (player.playerRect().intersects(player2.playerRect())) {
+                    player2.setHealth(1);
+                    if (player2.getHealth() == 0) {
                         songClip.stop();
                         songClip.close();
                         ryuWin();
                     }
                 }
             }
+            playerAction = true;
         } else {
-            // player moves left (A)
-            if (pressedKeys[65]) {
+            if (pressedKeys[65]) { // A key for left
                 player.faceLeft();
                 player.moveLeft();
+                playerAction = true;
             }
-
-            // player moves right (D)
-            if (pressedKeys[68]) {
+            if (pressedKeys[68]) { // D key for right
                 player.faceRight();
                 player.moveRight();
+                playerAction = true;
             }
+            if (pressedKeys[87]) { // W key for jump
+                if (!player.isJumping()) {
+                    if (pressedKeys[68]) { // W + D for right jump
+                        player.jumpRight();
+                    } else if (pressedKeys[65]) { // W + A for left jump
+                        player.jumpLeft();
+                    } else { // W for straight jump
+                        player.jump();
+                    }
+                    jumpTimer.start();
+                }
+            }
+            playerAction = true;
 
-            // player moves up (W)
-//            if (pressedKeys[87]) {
-//                player.moveUp();
-//            }
-
-            // player moves down (S)
-//            if (pressedKeys[83]) {
-//                player.moveDown();
-//            }
         }
+        if (!playerAction) {
+            player.setIdle(true);
+        } else {
+            player.setIdle(false);
+        }
+
         repaint();
     }
 

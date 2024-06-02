@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public class Player {
     private final double MOVE_AMT = 0.4;
+    private final double JUMP_AMT = 2;
+    private final double GRAVITY = 0.5;
     private BufferedImage right;
     private BufferedImage left;
     private BufferedImage punchrightMove;
@@ -19,9 +21,13 @@ public class Player {
     private BufferedImage currentImage;
 
     private boolean isPunching;
+    private boolean isIdle;
+    private boolean isJumping;
 
     private Animation run;
     private Animation punch;
+    private Animation idle;
+    private Animation jump;
 
     public Player(String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = true;
@@ -51,6 +57,32 @@ public class Player {
             }
         }
         punch = new Animation(punch_animation,200);
+
+        ArrayList<BufferedImage> jump_animation = new ArrayList<>();
+        for (int i = 1; i <= 7; i++) {
+            String filename = "src/RyuAniJump/jump_" + i + ".png";
+            try {
+                jump_animation.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        jump = new Animation(jump_animation,200);
+        isJumping = false;
+
+        ArrayList<BufferedImage> idle_animation = new ArrayList<>();
+        for (int i = 1; i <= 1; i++) {
+            String filename = "src/RyuAni/ryuIdle.png";
+            try {
+                idle_animation.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        idle = new Animation(idle_animation,200);
+        isIdle = true;
 
 
         ArrayList<BufferedImage> run_animation = new ArrayList<>();
@@ -103,12 +135,14 @@ public class Player {
         if (xCoord + MOVE_AMT <= 920) {
             xCoord += MOVE_AMT;
         }
+        isIdle = false;
     }
 
     public void moveLeft() {
         if (xCoord - MOVE_AMT >= 0) {
             xCoord -= MOVE_AMT;
         }
+        isIdle = false;
     }
 
     public void turn() {
@@ -131,13 +165,46 @@ public class Player {
         if (yCoord - MOVE_AMT >= 0) {
             yCoord -= 10;
         }
+        isIdle = false;
     }
 
     public void moveDown() {
         if (yCoord + MOVE_AMT <= 435) {
             yCoord += 10;
         }
+        isIdle = false;
     }
+
+    public void jump() {
+        isJumping = true;
+    }
+
+    public void jumpRight() {
+        isJumping = true;
+        if (xCoord + MOVE_AMT <= 920) {
+            xCoord += MOVE_AMT * 10; // Adjust this value for the rightward jump distance
+        }
+        yCoord -= 200; // Adjust this value for the upward jump height
+        isIdle = false;
+    }
+
+    public void jumpLeft() {
+        isJumping = true;
+        if (xCoord - MOVE_AMT >= 0) {
+            xCoord -= MOVE_AMT * 10; // Adjust this value for the leftward jump distance
+        }
+        yCoord -= 200; // Adjust this value for the upward jump height
+        isIdle = false;
+    }
+
+    public void resetJump() {
+        isJumping = false;
+    }
+
+    public boolean isJumping() {
+        return isJumping;
+    }
+
 
     public void collectCoin() {
         score++;
@@ -156,15 +223,22 @@ public class Player {
         return isPunching;
     }
 
+    public void setIdle(boolean idle) {
+        this.isIdle = idle;
+    }
+
+    public boolean isIdle() {
+        return isIdle;
+    }
+
 
     public BufferedImage getPlayerImage() {
         if (isPunching) {
-//            if (!facingRight) {
-//                return punchleftMove;
-//            } else{
-//                return punchrightMove;
-//            }
             return punch.getActiveFrame();
+        } else if (isJumping) {
+            return jump.getActiveFrame();
+        }else if (isIdle) {
+            return idle.getActiveFrame();
         } else {
             return run.getActiveFrame();
         }
