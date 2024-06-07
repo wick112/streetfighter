@@ -104,11 +104,11 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 punchTimer2.start();
                 if (player2.playerRect().intersects(player.playerRect())) {
                     System.out.println("player2 x: " + player2.playerRect().x + "  player 1 x: " + player.playerRect().x + " p2 facing right: " + player2.ifFacingRight());
-                    if (player2.ifFacingRight() && player2.getxCoord() < player.getxCoord()) {
+                    if (player2.ifFacingRight() && player2.playerRect().x < player.playerRect().x) {
                         System.out.println("player2 x coord: " + player2.getxCoord() + "  player 1 x: " + player.getxCoord());
                         System.out.println("---- 1");
                         player.setHealth(5);
-                    } else if (!player2.ifFacingRight() && player2.getxCoord() > player.getxCoord()) {
+                    } else if (!player2.ifFacingRight() && player2.playerRect().x > player.playerRect().x) {
                         System.out.println("player2 x coord: " + player2.getxCoord() + "  player 1 x: " + player.getxCoord());
                         System.out.println("---- 2");
                         player.setHealth(5);
@@ -145,7 +145,10 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 player.punch();
                 punchTimer.start();
                 if (player.playerRect().intersects(player2.playerRect())) {
-                    if ((player.ifFacingRight() && player.getxCoord() < player2.getxCoord()) || (!player.ifFacingRight() && player.getxCoord() > player2.getxCoord())) {
+                    if ((player.ifFacingRight() && player.playerRect().x < player2.playerRect().x)) {
+                        player2.setHealth(1);
+                    }
+                    else if (!player.ifFacingRight() && player.playerRect().x > player2.playerRect().x) {
                         player2.setHealth(1);
                     }
                     if (player2.getHealth() == 0) {

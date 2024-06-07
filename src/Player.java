@@ -109,11 +109,11 @@ public class Player {
     }
 
     public int getxCoord() {
-        //if (facingRight) {
+        if (facingRight) {
             return (int) xCoord;
-       // } else {
-       //     return (int) (xCoord + (getPlayerImage().getWidth()));
-       // }
+        } else {
+            return (int) (xCoord + (getPlayerImage().getWidth()));
+        }
     }
 
     public int getyCoord() {
