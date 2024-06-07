@@ -37,7 +37,7 @@ public class Player {
     public Player(String rightImg, String punchrightImg, String punchleftImg) {
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
-        groundYCoord = 360;
+        groundYCoord = 350;
         yCoord = groundYCoord;
         score = 0;
         health = 5;
@@ -109,11 +109,11 @@ public class Player {
     }
 
     public int getxCoord() {
-        if (facingRight) {
+        //if (facingRight) {
             return (int) xCoord;
-        } else {
-            return (int) (xCoord + (getPlayerImage().getWidth()));
-        }
+       // } else {
+       //     return (int) (xCoord + (getPlayerImage().getWidth()));
+       // }
     }
 
     public int getyCoord() {

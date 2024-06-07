@@ -103,7 +103,16 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 player2.punch();
                 punchTimer2.start();
                 if (player2.playerRect().intersects(player.playerRect())) {
-                    player.setHealth(5);
+                    System.out.println("player2 x: " + player2.playerRect().x + "  player 1 x: " + player.playerRect().x + " p2 facing right: " + player2.ifFacingRight());
+                    if (player2.ifFacingRight() && player2.getxCoord() < player.getxCoord()) {
+                        System.out.println("player2 x coord: " + player2.getxCoord() + "  player 1 x: " + player.getxCoord());
+                        System.out.println("---- 1");
+                        player.setHealth(5);
+                    } else if (!player2.ifFacingRight() && player2.getxCoord() > player.getxCoord()) {
+                        System.out.println("player2 x coord: " + player2.getxCoord() + "  player 1 x: " + player.getxCoord());
+                        System.out.println("---- 2");
+                        player.setHealth(5);
+                    }
                     if (player.getHealth() == 0) {
                         songClip.stop();
                         songClip.close();
@@ -136,7 +145,9 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 player.punch();
                 punchTimer.start();
                 if (player.playerRect().intersects(player2.playerRect())) {
-                    player2.setHealth(1);
+                    if ((player.ifFacingRight() && player.getxCoord() < player2.getxCoord()) || (!player.ifFacingRight() && player.getxCoord() > player2.getxCoord())) {
+                        player2.setHealth(1);
+                    }
                     if (player2.getHealth() == 0) {
                         songClip.stop();
                         songClip.close();
