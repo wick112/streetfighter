@@ -6,7 +6,7 @@ public class EndFrameRyu {
     public EndFrameRyu() {
         JFrame frame = new JFrame("Street Fighter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(650, 650);
+        frame.setSize(650, 550);
         frame.setLocationRelativeTo(null); // auto-centers frame in screen
 
         // create and add panel

@@ -17,7 +17,7 @@ public class Player {
     private double xCoord;
     private double yCoord;
     private double groundYCoord;
-    private int score;
+    private int tagTeam;
     private int health;
     private BufferedImage currentImage;
 
@@ -35,12 +35,12 @@ public class Player {
     private Animation jump;
 
     public Player(String rightImg, String punchrightImg, String punchleftImg) {
+        tagTeam = 0;
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
         groundYCoord = 350;
         yCoord = groundYCoord;
-        score = 0;
-        health = 5;
+        health = 20;
         try {
 //            left = ImageIO.read(new File(leftImg));
             right = ImageIO.read(new File(rightImg));
@@ -65,7 +65,7 @@ public class Player {
         punch = new Animation(punch_animation,200);
 
         ArrayList<BufferedImage> jump_animation = new ArrayList<>();
-        for (int i = 1; i <= 7; i++) {
+        for (int i = 2; i <= 7; i++) {
             String filename = "src/RyuAniJump/jump_" + i + ".png";
             try {
                 jump_animation.add(ImageIO.read(new File(filename)));
@@ -120,9 +120,6 @@ public class Player {
         return (int) yCoord;
     }
 
-    public int getScore() {
-        return score;
-    }
 
     public void faceRight() {
         facingRight = true;
@@ -160,8 +157,11 @@ public class Player {
         }
     }
 
-    public void setHealth(int newH){
+    public void minusHealth(int newH){
         health -= newH;
+        if(health <= 0){
+            health = 0;
+        }
     }
 
     public int getHealth(){
@@ -201,12 +201,6 @@ public class Player {
     public boolean isJumping() {
         return isJumping;
     }
-
-
-    public void collectCoin() {
-        score++;
-    }
-
 
     public void punch() {
         isPunching = true;
@@ -298,5 +292,17 @@ public class Player {
         int imageHeight = getPlayerImage().getHeight();
         int imageWidth = getPlayerImage().getWidth();
         return new Rectangle((int) xCoord, (int) yCoord, imageWidth, imageHeight);
+    }
+
+    public int getTagTeam(){
+        return tagTeam;
+    }
+
+    public void addTagTeam(){
+        tagTeam += 5;
+    }
+
+    public void resetTagTeam(){
+        tagTeam = 0;
     }
 }

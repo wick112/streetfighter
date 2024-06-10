@@ -6,10 +6,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 
 public class GraphicsPanel extends JPanel implements KeyListener, MouseListener {
     private BufferedImage background;
@@ -17,16 +15,29 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     private Player2 player2;
     private boolean[] pressedKeys;
     private Timer punchTimer;
+    private Timer chunliTimer;
+    private Timer zangeifTimer;
+
     private Timer punchTimer2;
     private Timer jumpTimer;
-    private Timer playerJumpUpdater;
+    private Timer jump2Timer;
+    private Timer timer;
+    private Timer timer2;
 
+    private Timer playerJumpUpdater;
+    private Timer player2JumpUpdater;
+
+    private MainFrame frame;
+    private boolean isAnimating;
+    private ChunliFrame f; // Reference to ChunliFrame instance
+    private ZangeifFrame z; // Reference to ChunliFrame instance
 
     private Clip songClip;
 
 
 
-    public GraphicsPanel() {
+    public GraphicsPanel(MainFrame frame) {
+        this.frame = frame;
         try {
             background = ImageIO.read(new File("src/Assets/fightbackground.png"));
         } catch (IOException e) {
@@ -79,6 +90,65 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         });
         playerJumpUpdater.start();
 
+        jump2Timer = new Timer(600, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                player2.resetJump();
+                jump2Timer.stop();
+                repaint();
+            }
+        });
+        jump2Timer.setRepeats(false);
+
+        player2JumpUpdater = new Timer(20, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                player2.updateJumpingState();
+                repaint();
+            }
+        });
+        player2JumpUpdater.start();
+
+        chunliTimer = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                f.disposeFrame();
+            }
+        });
+        chunliTimer.setRepeats(false); // Set to not repeat
+
+        timer = new Timer(600, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                f = new ChunliFrame();
+                chunliTimer.start();
+
+                timer.stop(); // stop this delay timer
+                player.resetTagTeam();
+            }
+        });
+        timer.setRepeats(false); // Set to not repeat
+
+        zangeifTimer = new Timer(10800, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                z.disposeFrame();
+            }
+        });
+        zangeifTimer.setRepeats(false); // Set to not repeat
+
+        timer2 = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                z = new ZangeifFrame();
+                zangeifTimer.start();
+
+                timer2.stop(); // stop this delay timer
+                player2.resetTagTeam();
+            }
+        });
+        timer2.setRepeats(false); // Set to not repeat
+
         playMusic();
 
     }
@@ -103,15 +173,12 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 player2.punch();
                 punchTimer2.start();
                 if (player2.playerRect().intersects(player.playerRect())) {
-                    System.out.println("player2 x: " + player2.playerRect().x + "  player 1 x: " + player.playerRect().x + " p2 facing right: " + player2.ifFacingRight());
                     if (player2.ifFacingRight() && player2.playerRect().x < player.playerRect().x) {
-                        System.out.println("player2 x coord: " + player2.getxCoord() + "  player 1 x: " + player.getxCoord());
-                        System.out.println("---- 1");
-                        player.setHealth(5);
+                        player2.addTagTeam();
+                        player.minusHealth(1);
                     } else if (!player2.ifFacingRight() && player2.playerRect().x > player.playerRect().x) {
-                        System.out.println("player2 x coord: " + player2.getxCoord() + "  player 1 x: " + player.getxCoord());
-                        System.out.println("---- 2");
-                        player.setHealth(5);
+                        player2.addTagTeam();
+                        player.minusHealth(1);
                     }
                     if (player.getHealth() == 0) {
                         songClip.stop();
@@ -121,7 +188,17 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 }
             }
             player2Action = true;
-        } else {
+        } else if (pressedKeys[16]) {
+            if(player2.getTagTeam() >= 10){
+                player.minusHealth(1);
+                timer2.start();
+                if (player.getHealth() == 0) {
+                    songClip.stop();
+                    songClip.close();
+                    bisonWin();
+                }
+            }
+        }else {
             if (pressedKeys[37]) { // Left arrow key for player 2
                 player2.faceLeft();
                 player2.moveLeft();
@@ -132,7 +209,17 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 player2.moveRight();
                 player2Action = true;
             }
+            if (pressedKeys[38]) { // W key for jump
+                if (!player2.isJumping()) {
+                    boolean right = pressedKeys[39]; // W + D for right jump
+                    boolean left = pressedKeys[37]; // W + A for left jump
+                    player2.setJumpingDirection(right, left);
+                    player2.jump();
+                }
+                player2Action = true;
+            }
         }
+
 
         if (!player2Action) {
             player2.setIdle(true);
@@ -146,20 +233,35 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 punchTimer.start();
                 if (player.playerRect().intersects(player2.playerRect())) {
                     if ((player.ifFacingRight() && player.playerRect().x < player2.playerRect().x)) {
-                        player2.setHealth(1);
+                        player.addTagTeam();
+                        player2.minusHealth(1);
                     }
                     else if (!player.ifFacingRight() && player.playerRect().x > player2.playerRect().x) {
-                        player2.setHealth(1);
+                        player.addTagTeam();
+                        player2.minusHealth(1);
                     }
                     if (player2.getHealth() == 0) {
                         songClip.stop();
                         songClip.close();
                         ryuWin();
+
                     }
                 }
             }
             playerAction = true;
-        } else {
+        } else if (pressedKeys[70]) {
+            if(player.getTagTeam() >= 10){
+                player2.minusHealth(1);
+                timer.start();
+//                if (player2.getHealth() == 0) {
+//                    songClip.stop();
+//                    songClip.close();
+//                    ryuWin();
+//
+//                }
+            }
+
+        }else {
             if (pressedKeys[65]) { // A key for left
                 player.faceLeft();
                 player.moveLeft();
@@ -181,6 +283,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             }
 
         }
+
+
         if (!playerAction) {
             player.setIdle(true);
         } else {
@@ -229,9 +333,12 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
 
     public void ryuWin(){
         EndFrameRyu r = new EndFrameRyu();
+        frame.disposeFrame();
     }
     public void bisonWin(){
         EndFrameBison r = new EndFrameBison();
+        frame.disposeFrame();
+        System.out.println(player.getHealth());
     }
 
     private void playMusic() {
