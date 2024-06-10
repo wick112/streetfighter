@@ -22,6 +22,7 @@ public class Player2 {
     private int health2;
 
     private boolean isPunching;
+    private boolean isKicking;
     private boolean isIdle;
     private boolean isJumping;
     private boolean isFalling;
@@ -32,6 +33,7 @@ public class Player2 {
     private Animation jump;
     private Animation punch;
     private Animation idle;
+    private Animation kick;
 
     public Player2(String rightImg, String punchrightImg, String punchleftImg) {
         tagTeam = 0;
@@ -203,6 +205,7 @@ public class Player2 {
     public void punch() {
         isPunching = true;
     }
+    public void kick() {isKicking = true;}
 
     public void resetPunch() {
         isPunching = false;
@@ -259,7 +262,8 @@ public class Player2 {
     public BufferedImage getPlayerImage() {
         if (isPunching) {
             return punch.getActiveFrame();
-        } else if (isJumping) {
+        }
+        else if (isJumping) {
             return jump.getActiveFrame();
         }else if (isIdle) {
             return idle.getActiveFrame();

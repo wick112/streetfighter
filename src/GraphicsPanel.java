@@ -173,17 +173,19 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 player2.punch();
                 punchTimer2.start();
                 if (player2.playerRect().intersects(player.playerRect())) {
-                    if (player2.ifFacingRight() && player2.playerRect().x < player.playerRect().x) {
-                        player2.addTagTeam();
-                        player.minusHealth(1);
-                    } else if (!player2.ifFacingRight() && player2.playerRect().x > player.playerRect().x) {
-                        player2.addTagTeam();
-                        player.minusHealth(1);
-                    }
-                    if (player.getHealth() == 0) {
-                        songClip.stop();
-                        songClip.close();
-                        bisonWin();
+                    if (!player.isJumping()) {
+                        if (player2.ifFacingRight() && player2.playerRect().x < player.playerRect().x) {
+                            player2.addTagTeam();
+                            player.minusHealth(1);
+                        } else if (!player2.ifFacingRight() && player2.playerRect().x > player.playerRect().x) {
+                            player2.addTagTeam();
+                            player.minusHealth(1);
+                        }
+                        if (player.getHealth() == 0) {
+                            songClip.stop();
+                            songClip.close();
+                            bisonWin();
+                        }
                     }
                 }
             }
@@ -222,19 +224,21 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 player.punch();
                 punchTimer.start();
                 if (player.playerRect().intersects(player2.playerRect())) {
-                    if ((player.ifFacingRight() && player.playerRect().x < player2.playerRect().x)) {
-                        player.addTagTeam();
-                        player2.minusHealth(1);
-                    }
-                    else if (!player.ifFacingRight() && player.playerRect().x > player2.playerRect().x) {
-                        player.addTagTeam();
-                        player2.minusHealth(1);
-                    }
-                    if (player2.getHealth() == 0) {
-                        songClip.stop();
-                        songClip.close();
-                        ryuWin();
+                    if (!player2.isJumping()) {
+                        if ((player.ifFacingRight() && player.playerRect().x < player2.playerRect().x)) {
+                            player.addTagTeam();
+                            player2.minusHealth(1);
+                        }
+                        else if (!player.ifFacingRight() && player.playerRect().x > player2.playerRect().x) {
+                            player.addTagTeam();
+                            player2.minusHealth(1);
+                        }
+                        if (player2.getHealth() == 0) {
+                            songClip.stop();
+                            songClip.close();
+                            ryuWin();
 
+                        }
                     }
                 }
             }
