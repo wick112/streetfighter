@@ -188,17 +188,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 }
             }
             player2Action = true;
-        } else if (pressedKeys[16]) {
-            if(player2.getTagTeam() >= 10){
-                player.minusHealth(1);
-                timer2.start();
-                if (player.getHealth() == 0) {
-                    songClip.stop();
-                    songClip.close();
-                    bisonWin();
-                }
-            }
-        }else {
+        } else {
             if (pressedKeys[37]) { // Left arrow key for player 2
                 player2.faceLeft();
                 player2.moveLeft();
@@ -249,18 +239,6 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 }
             }
             playerAction = true;
-        } else if (pressedKeys[70]) {
-            if(player.getTagTeam() >= 10){
-                player2.minusHealth(1);
-                timer.start();
-//                if (player2.getHealth() == 0) {
-//                    songClip.stop();
-//                    songClip.close();
-//                    ryuWin();
-//
-//                }
-            }
-
         }else {
             if (pressedKeys[65]) { // A key for left
                 player.faceLeft();
@@ -302,6 +280,29 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         // A = 65, D = 68, S = 83, W = 87, left = 37, up = 38, right = 39, down = 40, space = 32, enter = 10
         int key = e.getKeyCode();
         pressedKeys[key] = true;
+        if (pressedKeys[70]) {
+            if(player.getTagTeam() >= 0){
+                timer.start();
+                player2.minusHealth(1);
+                if (player2.getHealth() == 0) {
+                    songClip.stop();
+                    songClip.close();
+                    ryuWin();
+
+                }
+            }
+
+        }else if (pressedKeys[16]) {
+            if(player2.getTagTeam() >= 0){
+                timer2.start();
+                player.minusHealth(1);
+                if (player.getHealth() == 0) {
+                    songClip.stop();
+                    songClip.close();
+                    bisonWin();
+                }
+            }
+        }
     }
 
     public void keyReleased(KeyEvent e) {
