@@ -1,13 +1,5 @@
-import javax.imageio.ImageIO;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
+
 public class ChunliFrame {
     private ChunliPanel panel;
     private JFrame frame;

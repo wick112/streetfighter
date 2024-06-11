@@ -19,6 +19,7 @@ public class Player {
     private double groundYCoord;
     private int tagTeam;
     private int health;
+    private int special;
     private BufferedImage currentImage;
 
     private boolean isPunching;
@@ -27,20 +28,23 @@ public class Player {
     private boolean isFalling;
     private boolean isJumpingRight;
     private boolean isJumpingLeft;
+    private boolean isKicking;
 
 
     private Animation run;
     private Animation punch;
     private Animation idle;
     private Animation jump;
+    private Animation kick;
 
     public Player(String rightImg, String punchrightImg, String punchleftImg) {
+        special  = 0;
         tagTeam = 0;
         facingRight = true;
         xCoord = 50; // starting position is (50, 435), right on top of ground
         groundYCoord = 350;
         yCoord = groundYCoord;
-        health = 20;
+        health = 150;
         try {
 //            left = ImageIO.read(new File(leftImg));
             right = ImageIO.read(new File(rightImg));
@@ -63,6 +67,18 @@ public class Player {
             }
         }
         punch = new Animation(punch_animation,200);
+
+        ArrayList<BufferedImage> kick_animation = new ArrayList<>();
+        for (int i = 1; i <= 2; i++) {
+            String filename = "src/RyuAni/RyuAniKick/kick_" + i + ".png";
+            try {
+                kick_animation.add(ImageIO.read(new File(filename)));
+            }
+            catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        kick = new Animation(kick_animation,200);
 
         ArrayList<BufferedImage> jump_animation = new ArrayList<>();
         for (int i = 2; i <= 7; i++) {
@@ -206,8 +222,20 @@ public class Player {
         isPunching = true;
     }
 
+    public void kick() {
+        isKicking = true;
+    }
+
+    public boolean isKicking(){
+        return isKicking;
+    }
+
     public void resetPunch() {
         isPunching = false;
+    }
+
+    public void resetKick() {
+        isKicking = false;
     }
 
     public boolean isPunching(){
@@ -261,6 +289,8 @@ public class Player {
             return punch.getActiveFrame();
         } else if (isJumping) {
             return jump.getActiveFrame();
+        }else if (isKicking) {
+            return kick.getActiveFrame();
         }else if (isIdle) {
             return idle.getActiveFrame();
         } else {
@@ -304,5 +334,19 @@ public class Player {
 
     public void resetTagTeam(){
         tagTeam = 0;
+    }
+
+
+
+    public int getSpecial(){
+        return special;
+    }
+
+    public void addSpecial(){
+        special += 5;
+    }
+
+    public void resetSpecial(){
+        special = 0;
     }
 }

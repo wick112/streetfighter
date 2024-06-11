@@ -11,18 +11,32 @@ import javax.sound.sampled.AudioSystem;
 
 public class GraphicsPanel extends JPanel implements KeyListener, MouseListener {
     private BufferedImage background;
+    private BufferedImage koBar;
+    private BufferedImage fight;
+    private BufferedImage freePlay;
+
+
     private Player player;
     private Player2 player2;
     private boolean[] pressedKeys;
     private Timer punchTimer;
     private Timer chunliTimer;
     private Timer zangeifTimer;
+    private Timer ryuSpecialTimer;
+    private Timer bisonSpecialTimer;
+
+
 
     private Timer punchTimer2;
+    private Timer kickTimer;
+    private Timer kickTimer2;
     private Timer jumpTimer;
     private Timer jump2Timer;
     private Timer timer;
     private Timer timer2;
+    private Timer timer3;
+    private Timer timer4;
+
 
     private Timer playerJumpUpdater;
     private Timer player2JumpUpdater;
@@ -32,6 +46,10 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     private ChunliFrame f; // Reference to ChunliFrame instance
     private ZangeifFrame z; // Reference to ChunliFrame instance
 
+    private RspecialFrame r;
+    private BspecialFrame b;
+
+
     private Clip songClip;
 
 
@@ -40,6 +58,9 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         this.frame = frame;
         try {
             background = ImageIO.read(new File("src/Assets/fightbackground.png"));
+            koBar = ImageIO.read(new File("src/Assets/koBar.png"));
+            freePlay = ImageIO.read(new File("src/Assets/freePlay.png"));
+            fight = ImageIO.read(new File("src/Assets/fight.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -109,7 +130,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         });
         player2JumpUpdater.start();
 
-        chunliTimer = new Timer(5000, new ActionListener() {
+        chunliTimer = new Timer(8300, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 f.disposeFrame();
@@ -117,7 +138,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         });
         chunliTimer.setRepeats(false); // Set to not repeat
 
-        timer = new Timer(600, new ActionListener() {
+        timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 f = new ChunliFrame();
@@ -149,6 +170,67 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         });
         timer2.setRepeats(false); // Set to not repeat
 
+
+        ryuSpecialTimer = new Timer(6900, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                r.disposeFrame();
+            }
+        });
+        ryuSpecialTimer.setRepeats(false); // Set to not repeat
+
+        timer3 = new Timer(50, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                r = new RspecialFrame();
+                ryuSpecialTimer.start();
+
+                timer3.stop(); // stop this delay timer
+                player.resetSpecial();
+            }
+        });
+        timer3.setRepeats(false); // Set to not repeat
+
+        bisonSpecialTimer = new Timer(9300, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                b.disposeFrame();
+            }
+        });
+        bisonSpecialTimer.setRepeats(false); // Set to not repeat
+
+        timer4 = new Timer(50, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                b = new BspecialFrame();
+                bisonSpecialTimer.start();
+
+                timer4.stop(); // stop this delay timer
+                player2.resetSpecial();
+            }
+        });
+        timer4.setRepeats(false); // Set to not repeat
+
+        kickTimer = new Timer(800, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                player.resetKick();
+                kickTimer.stop();
+                repaint();
+            }
+        });
+        kickTimer.setRepeats(false);
+
+        kickTimer2 = new Timer(600, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                player2.resetKick();
+                kickTimer2.stop();
+                repaint();
+            }
+        });
+        kickTimer2.setRepeats(false);
+
         playMusic();
 
     }
@@ -160,13 +242,37 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
 
         super.paintComponent(g);  // just do this
         g.drawImage(background, 0, 0, null);  // the order that things get "painted" matter; we put background down first
+        g.drawImage(koBar, 140, 30, null);  // the order that things get "painted" matter; we put background down first
+        g.drawImage(freePlay, 0, 0, null);  // the order that things get "painted" matter; we put background down first
+        g.drawImage(fight, 400, 65, null);  // the order that things get "painted" matter; we put background down first
         g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), player.getWidth(), player.getHeight(), null);
         g.drawImage(player2.getPlayerImage(), player2.getxCoord(), player2.getyCoord(), player2.getWidth(), player2.getHeight(), null);
 
         // draw score
         g.setFont(new Font("Courier New", Font.BOLD, 24));
-        g.drawString("Player Health: " + player.getHealth(), 20, 40);
-        g.drawString("Player2 Health: " + player2.getHealth(), 400, 40);
+        g.drawString("Ryu Health: " + player.getHealth(), 175, 57);
+        g.drawString("M. Bison Health: " + player2.getHealth(), 550, 57);
+        if(player.getSpecial() >= 30){
+            g.drawString("Ryu Special Ready", 100, 90);
+        }else if(player.getSpecial() <= 30){
+            g.drawString("Ryu Special Not Ready", 100, 90);
+        }
+        if(player2.getSpecial() >= 30){
+            g.drawString("Bison Special Ready", 570, 90);
+        }else if(player2.getSpecial() <= 30){
+            g.drawString("Bison Special Not Ready", 570, 90);
+        }
+
+        if(player.getTagTeam() >= 30){
+            g.drawString("Tag Team Ready", 100, 115);
+        }else if(player.getTagTeam() <= 30){
+            g.drawString("Tag Team Not Ready", 100, 115);
+        }
+        if(player2.getTagTeam() >= 30){
+            g.drawString("Tag Team Ready", 570, 115);
+        }else if(player2.getTagTeam() <= 30){
+            g.drawString("Tag Team Not Ready", 570, 115);
+        }
 
         if (pressedKeys[17]) { // E key for player 2 punch
             if (!player2.isPunching()) {
@@ -176,12 +282,14 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                     if (!player.isJumping()) {
                         if (player2.ifFacingRight() && player2.playerRect().x < player.playerRect().x) {
                             player2.addTagTeam();
-                            player.minusHealth(1);
+                            player2.addSpecial();
+                            player.minusHealth(5);
                         } else if (!player2.ifFacingRight() && player2.playerRect().x > player.playerRect().x) {
                             player2.addTagTeam();
-                            player.minusHealth(1);
+                            player2.addSpecial();
+                            player.minusHealth(5);
                         }
-                        if (player.getHealth() == 0) {
+                        if (player.getHealth() <= 0) {
                             songClip.stop();
                             songClip.close();
                             bisonWin();
@@ -190,7 +298,33 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                 }
             }
             player2Action = true;
-        } else {
+        } else if (pressedKeys[40]) { // E key for punch
+            if (!player2.isKicking()) {
+                player2.kick();
+                kickTimer2.start();
+                if (player2.playerRect().intersects(player.playerRect())) {
+                    if (!player.isJumping()) {
+                        if ((player2.ifFacingRight() && player2.playerRect().x < player.playerRect().x)) {
+                            player2.addTagTeam();
+                            player2.addSpecial();
+                            player.minusHealth(7);
+                        }
+                        else if (!player2.ifFacingRight() && player2.playerRect().x > player.playerRect().x) {
+                            player2.addTagTeam();
+                            player2.addSpecial();
+                            player.minusHealth(7);
+                        }
+                        if (player.getHealth() <= 0) {
+                            songClip.stop();
+                            songClip.close();
+                            bisonWin();
+
+                        }
+                    }
+                }
+            }
+            player2Action = true;
+        }else {
             if (pressedKeys[37]) { // Left arrow key for player 2
                 player2.faceLeft();
                 player2.moveLeft();
@@ -227,13 +361,41 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
                     if (!player2.isJumping()) {
                         if ((player.ifFacingRight() && player.playerRect().x < player2.playerRect().x)) {
                             player.addTagTeam();
-                            player2.minusHealth(1);
+                            player.addSpecial();
+                            player2.minusHealth(5);
                         }
                         else if (!player.ifFacingRight() && player.playerRect().x > player2.playerRect().x) {
                             player.addTagTeam();
-                            player2.minusHealth(1);
+                            player.addSpecial();
+                            player2.minusHealth(5);
                         }
-                        if (player2.getHealth() == 0) {
+                        if (player2.getHealth() <= 0) {
+                            songClip.stop();
+                            songClip.close();
+                            ryuWin();
+
+                        }
+                    }
+                }
+            }
+            playerAction = true;
+        }else if (pressedKeys[83]) { // E key for punch
+            if (!player.isKicking()) {
+                player.kick();
+                kickTimer.start();
+                if (player.playerRect().intersects(player2.playerRect())) {
+                    if (!player2.isJumping()) {
+                        if ((player.ifFacingRight() && player.playerRect().x < player2.playerRect().x)) {
+                            player.addTagTeam();
+                            player.addSpecial();
+                            player2.minusHealth(7);
+                        }
+                        else if (!player.ifFacingRight() && player.playerRect().x > player2.playerRect().x) {
+                            player.addTagTeam();
+                            player.addSpecial();
+                            player2.minusHealth(7);
+                        }
+                        if (player2.getHealth() <= 0) {
                             songClip.stop();
                             songClip.close();
                             ryuWin();
@@ -285,9 +447,9 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
         int key = e.getKeyCode();
         pressedKeys[key] = true;
         if (pressedKeys[70]) {
-            if(player.getTagTeam() >= 0){
+            if(player.getTagTeam() >= 30){
                 timer.start();
-                player2.minusHealth(1);
+                player2.minusHealth(15);
                 if (player2.getHealth() == 0) {
                     songClip.stop();
                     songClip.close();
@@ -297,10 +459,30 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
             }
 
         }else if (pressedKeys[16]) {
-            if(player2.getTagTeam() >= 0){
+            if(player2.getTagTeam() >= 30){
                 timer2.start();
-                player.minusHealth(1);
-                if (player.getHealth() == 0) {
+                player.minusHealth(15);
+                if (player.getHealth() <= 0) {
+                    songClip.stop();
+                    songClip.close();
+                    bisonWin();
+                }
+            }
+        }else if (pressedKeys[81]) {
+            if(player.getSpecial() >= 30){
+                timer3.start();
+                player2.minusHealth(15);
+                if (player2.getHealth() <= 0) {
+                    songClip.stop();
+                    songClip.close();
+                    ryuWin();
+                }
+            }
+        }else if (pressedKeys[18]) {
+            if(player2.getSpecial() >= 30){
+                timer4.start();
+                player.minusHealth(15);
+                if (player.getHealth() <= 0) {
                     songClip.stop();
                     songClip.close();
                     bisonWin();
@@ -343,7 +525,6 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener 
     public void bisonWin(){
         EndFrameBison r = new EndFrameBison();
         frame.disposeFrame();
-        System.out.println(player.getHealth());
     }
 
     private void playMusic() {
